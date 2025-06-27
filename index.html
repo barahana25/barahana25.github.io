@@ -64,6 +64,25 @@
         const d = distanceMeters({lat: latitude, lon: longitude}, TARGET);
         box.setAttribute('visible', d < 30);           // 30 m 안쪽이면 보이게
       });
+      const info = document.getElementById('gpsDisplay');
+
+      window.addEventListener('gps-camera-update-position', (e) => {
+        const { latitude, longitude, accuracy } = e.detail.position;
+        const d = distanceMeters({lat: latitude, lon: longitude}, TARGET);
+        box.setAttribute('visible', d < 30);
+
+        // ⓐ 소수점 둘째 자리까지 표시, ⓑ GPS 오차도 함께 출력
+        info.textContent =
+          `📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}  |  ±${Math.round(accuracy)} m`;
+      });
     </script>
+    <div id="gpsDisplay"
+       style="
+         position:fixed; bottom:0; left:0; width:100%;
+         padding:6px 10px; background:rgba(0,0,0,0.6);
+         color:#fff; font-size:14px; font-family:monospace;
+         z-index:9999; text-align:center;">
+      위도·경도 로딩 중…
+  </div>
   </body>
 </html>
