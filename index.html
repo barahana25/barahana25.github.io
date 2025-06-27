@@ -6,10 +6,14 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
       
       <!-- 카메라: FOV 조절 가능 -->
-      <a-entity camera look-controls position="0 1.6 0"></a-entity>
+      <a-camera gps-camera rotation-reader></a-camera>
       
       <!-- 원근감 있게 멀리 떨어진 박스 -->
       <a-box position="0 0 -5" depth="1" height="1" width="1" color="blue" shadow></a-box>
