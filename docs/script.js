@@ -6,15 +6,13 @@ window.onload = () => {
     let places = staticLoadPlaces();
     renderPlaces(places);
 };
-
 function staticLoadPlaces() {
     return [
         {
             name: 'Pokèmon',
             location: {
-                // decomment the following and add coordinates:
-                // lat: <your-latitude>,
-                // lng: <your-longitude>,
+                lat: 36.3552,
+                lng: 128.7025,
             },
         },
     ];
