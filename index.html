@@ -1,88 +1,85 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <!-- 모바일에서 전체 화면·센서 허용 -->
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <!-- A-Frame + AR.js (location 포함 빌드) -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.js"></script>
-    <title>Location-based AR demo</title>
-    <style>body{margin:0;overflow:hidden;font-family:sans-serif}</style>
-  </head>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>위치-기반 AR.js 데모</title>
 
-  <body>
-    <!-- arjs system: videoTexture true면 먼 거리 물체도 안정적으로 렌더링 -->
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false"
-      renderer="antialias: true; logarithmicDepthBuffer: true"
-      vr-mode-ui="enabled: false"
-    >
-      <!-- GPS 카메라 : 기기 위치를 지속 갱신 -->
-      <a-camera gps-camera rotation-reader></a-camera>
-      <!-- 1. 고정 위치에 나타날 3D 상자 -->
-      <a-box
-        gps-entity-place="latitude: 36.3553302; longitude: 128.7025256;"
-        material="color: #FF1493; opacity: 0.9"
-        depth="2" height="2" width="2"
-        scale="1 1 1"
-        look-at="[gps-camera]"
-      ></a-box>
+  <!-- A-Frame + AR.js(3.4) location build -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- three.js helper for location -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/three.js/build/ar-threex-location-only.js"></script>
+  <!-- aframe-ar.js-->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
-      <!-- 2. GLTF 모델 예시 (Pokémon 마냥!) -->
-      <!-- <a-entity
-          gps-entity-place="latitude: 36.14570; longitude: 128.39212;"
-          gltf-model="url(models/pikachu.glb)"
-          scale="0.5 0.5 0.5"
-          animation-mixer
-          look-at="[gps-camera]"
-      ></a-entity> -->
-    </a-scene>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <style>body{margin:0;overflow:hidden;font-family:sans-serif}</style>
+</head>
 
-    <!-- 간단한 거리-트리거: 30 m 이내일 때만 표시 -->
-    <script>
-      // 거리 계산 함수 (Haversine)
-      function distanceMeters(pos1, pos2) {
-        const R = 6371000;
-        const toRad = deg => deg * Math.PI / 180;
-        const dLat = toRad(pos2.lat - pos1.lat);
-        const dLon = toRad(pos2.lon - pos1.lon);
-        const a =
-          Math.sin(dLat / 2) ** 2 +
-          Math.cos(toRad(pos1.lat)) * Math.cos(toRad(pos2.lat)) *
-          Math.sin(dLon / 2) ** 2;
-        return 2 * R * Math.asin(Math.sqrt(a));
-      }
-
-      const TARGET = { lat: 36.3553302, lon: 128.7025256 };
-      const box = document.querySelector('a-box');
-
-      window.addEventListener('gps-camera-update-position', (e) => {
-        const { latitude, longitude } = e.detail.position;
-        const d = distanceMeters({lat: latitude, lon: longitude}, TARGET);
-        box.setAttribute('visible', d < 30);           // 30 m 안쪽이면 보이게
-      });
-      const info = document.getElementById('gpsDisplay');
-
-      window.addEventListener('gps-camera-update-position', (e) => {
-        const { latitude, longitude, accuracy } = e.detail.position;
-        const d = distanceMeters({lat: latitude, lon: longitude}, TARGET);
-        box.setAttribute('visible', d < 30);
-
-        // ⓐ 소수점 둘째 자리까지 표시, ⓑ GPS 오차도 함께 출력
-        info.textContent =
-          `📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}  |  ±${Math.round(accuracy)} m`;
-      });
-    </script>
-    <div id="gpsDisplay"
-       style="
-         position:fixed; bottom:0; left:0; width:100%;
-         padding:6px 10px; background:rgba(0,0,0,0.6);
-         color:#fff; font-size:14px; font-family:monospace;
-         z-index:9999; text-align:center;">
-      위도·경도 로딩 중…
+<body>
+  <!-- 하단 GPS 표시창 -->
+  <div id="gpsDisplay"
+       style="position:fixed;bottom:0;left:0;width:100%;
+              padding:6px 10px;background:rgba(0,0,0,.65);
+              color:#fff;font-size:14px;font-family:monospace;
+              z-index:9999;text-align:center;">
+    위도·경도 로딩 중…
   </div>
-  </body>
+
+  <!-- AR 장면 -->
+  <a-scene
+    embedded
+    renderer="antialias:true;logarithmicDepthBuffer:true"
+    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled:false"
+    vr-mode-ui="enabled:false"
+  >
+    <!-- GPS 카메라 -->
+    <a-camera gps-new-camera rotation-reader></a-camera>
+
+    <!-- 목표 지점(예: 학교 앞) 30 m 안에 들어오면 보일 박스 -->
+    <a-box id="target-box"
+           gps-new-entity-place="latitude: 36.14570; longitude: 128.39212;"
+           depth="2" height="2" width="2"
+           material="color:#FF1493;opacity:0.9"
+           look-at="[gps-new-camera]"
+           visible="false">
+    </a-box>
+  </a-scene>
+
+  <script>
+    window.addEventListener('load', () => {
+      const camera = document.querySelector('[gps-new-camera]');
+      const box    = document.getElementById('target-box');
+      const info   = document.getElementById('gpsDisplay');
+
+      // 목표 좌표 (수정해서 사용)
+      const TARGET = { lat: 36.14570, lon: 128.39212 };
+
+      // Haversine 거리 계산
+      const toRad = d => d * Math.PI / 180;
+      const distM = (p1, p2) => {
+        const R = 6371000;
+        const dLat = toRad(p2.lat - p1.lat);
+        const dLon = toRad(p2.lon - p1.lon);
+        const a =
+          Math.sin(dLat/2)**2 +
+          Math.cos(toRad(p1.lat)) * Math.cos(toRad(p2.lat)) *
+          Math.sin(dLon/2)**2;
+        return 2 * R * Math.asin(Math.sqrt(a));
+      };
+
+      /*  GPS 좌표가 갱신될 때마다 호출 */
+      camera.addEventListener('gps-camera-update-position', (e) => {
+        const { latitude, longitude, accuracy } = e.detail.position;
+
+        // ① 화면 하단에 좌표 표시
+        info.textContent =
+          `📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}  ±${Math.round(accuracy)} m`;
+
+        // ② 목표와의 거리 계산 후 30 m 이내면 박스 표시
+        const d = distM({ lat: latitude, lon: longitude }, TARGET);
+        box.setAttribute('visible', d < 30);
+      });
+    });
+  </script>
+</body>
 </html>
