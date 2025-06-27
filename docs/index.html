@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>GeoAR.js demo</title>
 
-  <!-- A-Frame & AR.js -->
+  <!-- 라이브러리: A-Frame 1.6.0 + AR.js classic -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://unpkg.com/aframe-look-at-component@1.0.0/dist/aframe-look-at-component.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
-    /* 좌표 표시창 */
     #gpsInfo{
       position:fixed;left:50%;bottom:.7rem;transform:translateX(-50%);
       padding:.3rem .6rem;border-radius:6px;
@@ -21,7 +19,7 @@
 </head>
 
 <body style="margin:0;overflow:hidden;">
-  <!-- ↓ 좌표 오버레이 -->
+  <!-- ▼ 실시간 좌표 표기 -->
   <div id="gpsInfo">위치 확인 중…</div>
 
   <a-scene
@@ -31,27 +29,31 @@
     <a-box
         material="color:red"
         scale="15 15 15"
-        position="0 0 0"
-        look-at="[gps-camera]"
-        gps-entity-place="latitude:36.3552; longitude:128.7025">
+        gps-entity-place="latitude:36.3552; longitude:128.7025"
+        look-at="[gps-camera]">
     </a-box>
 
-    <!-- 시뮬레이션 좌표 -->
-    <a-camera gps-camera="simulateLatitude:36.3552; simulateLongitude:128.7025;"
+    <!-- simulate*는 따로 작성! -->
+    <a-camera gps-camera
+              simulateLatitude="36.3552416"
+              simulateLongitude="128.7025304"
               rotation-reader>
     </a-camera>
   </a-scene>
 
   <script>
-    // gps-camera 위치 변화 → 오버레이 갱신
     const cam   = document.querySelector('[gps-camera]');
     const label = document.getElementById('gpsInfo');
 
-    cam.addEventListener('gps-camera-update-position', e => {         // 이벤트 이름 고정
-      const { latitude, longitude, accuracy } = e.detail.position;     // lat/lon/accuracy 값 얻기
+    function update(e){
+      const { latitude, longitude, accuracy } = e.detail.position;
       label.textContent =
         `lat ${latitude.toFixed(6)}  lng ${longitude.toFixed(6)}  ±${Math.round(accuracy)} m`;
-    });
+    }
+
+    // 철자 두 가지 모두 걸어 둠
+    cam.addEventListener('gps-camera-update-positon', update);
+    cam.addEventListener('gps-camera-update-position', update);
   </script>
 </body>
 </html>
