@@ -1,8 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="refresh" content="0; url=https://naver.com">
-</head>
-<body>
-</body>
+  <head>
+    <title>AR.js + Three.js 위치 기반 예제</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; gpsMinAccuracy: 100; debugUIEnabled: false;"
+    >
+      <!-- 카메라 -->
+      <a-camera gps-camera rotation-reader></a-camera>
+
+      <!-- 위치 기반 박스 (위도, 경도에 맞게 설정 필요) -->
+      <a-box
+        position="0 0 0"
+        gps-entity-place="latitude: 37.7749; longitude: 127.8857"
+        color="tomato"
+        scale="1 1 1"
+      ></a-box>
+    </a-scene>
+  </body>
 </html>
