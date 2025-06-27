@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <title>GeoAR.js demo</title>
+  <meta charset="utf-8" />
+  <title>GeoAR.js demo – GPS overlay</title>
 
-  <!-- 라이브러리: A-Frame 1.6.0 + AR.js classic -->
+  <!-- 권장: A-Frame 1.6.0 + AR.js 3.4.x location-only -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/three.js/build/ar-threex-location-only.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
   <style>
     #gpsInfo{
       position:fixed;left:50%;bottom:.7rem;transform:translateX(-50%);
-      padding:.3rem .6rem;border-radius:6px;
+      padding:.35rem .7rem;border-radius:6px;
       background:rgba(0,0,0,.55);color:#fff;font:700 0.9rem/1 monospace;
       z-index:9999
     }
@@ -19,41 +20,37 @@
 </head>
 
 <body style="margin:0;overflow:hidden;">
-  <!-- ▼ 실시간 좌표 표기 -->
+  <!-- ▼ 실시간 좌표 표시창 -->
   <div id="gpsInfo">위치 확인 중…</div>
 
   <a-scene
       vr-mode-ui="enabled:false"
       arjs="sourceType:webcam; videoTexture:true; debugUIEnabled:false">
 
+    <!-- 테스트용 박스 -->
     <a-box
         material="color:red"
         scale="15 15 15"
-        gps-entity-place="latitude:36.3552; longitude:128.7025"
-        look-at="[gps-camera]">
+        gps-new-entity-place="latitude:36.3552; longitude:128.7025"
+        look-at="[gps-new-camera]">
     </a-box>
 
-    <!-- simulate*는 따로 작성! -->
-    <a-camera gps-camera
-              simulateLatitude="36.3552416"
-              simulateLongitude="128.7025304"
+    <!-- new-location-based + 시뮬레이션 좌표 -->
+    <a-camera gps-new-camera="simulateLatitude:36.35524; simulateLongitude:128.70253;"
               rotation-reader>
     </a-camera>
   </a-scene>
 
   <script>
-    const cam   = document.querySelector('[gps-camera]');
+    const cam   = document.querySelector('[gps-new-camera]');
     const label = document.getElementById('gpsInfo');
 
-    function update(e){
+    // new-location-based도 동일한 이벤트 이름을 사용
+    cam.addEventListener('gps-camera-update-position', e=>{
       const { latitude, longitude, accuracy } = e.detail.position;
       label.textContent =
         `lat ${latitude.toFixed(6)}  lng ${longitude.toFixed(6)}  ±${Math.round(accuracy)} m`;
-    }
-
-    // 철자 두 가지 모두 걸어 둠
-    cam.addEventListener('gps-camera-update-positon', update);
-    cam.addEventListener('gps-camera-update-position', update);
+    });
   </script>
 </body>
 </html>
