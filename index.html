@@ -37,7 +37,7 @@
 
   <!-- 목표 지점 30 m 이내에서만 나타날 박스 -->
   <a-box id="target"
-         gps-new-entity-place="latitude:36.14570;longitude:128.39212;"
+         gps-new-entity-place="latitude:36.35527;longitude:128.70246;"
          depth="2" height="2" width="2"
          material="color:#FF1493;opacity:0.9"
          look-at="[gps-new-camera]"
@@ -50,7 +50,7 @@ window.addEventListener('load', () => {
   const camera = document.querySelector('[gps-new-camera]');
   const box    = document.getElementById('target');
 
-  const TARGET = {lat:36.14570, lon:128.39212};
+  const TARGET = {lat:36.35527, lon:128.70246};
   const toRad  = d => d*Math.PI/180;
   const dist   = (p1,p2) => {
     const R=6371000;
